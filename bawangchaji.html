@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>霸王茶姬 GEO监测看板</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system,"SF Pro Display","PingFang SC",sans-serif; background: #f8fafc; color: #1e293b; padding: 20px; }
+  h2 { font-size: 20px; font-weight: 700; margin-bottom: 4px; }
+  .subtitle { font-size: 13px; color: #64748b; margin-bottom: 20px; }
+  .platform { background: #fff; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); padding: 20px; margin-bottom: 20px; }
+  .platform-title { font-size: 16px; font-weight: 700; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+  .platform-title .dot { width: 10px; height: 10px; border-radius: 50%; }
+  .kpi-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 20px; }
+  .kpi { background: #f8fafc; border-radius: 8px; padding: 12px; text-align: center; }
+  .kpi .label { font-size: 11px; color: #94a3b8; margin-bottom: 4px; }
+  .kpi .value { font-size: 22px; font-weight: 700; }
+  .kpi .value.green { color: #16a34a; }
+  .kpi .value.blue { color: #2563eb; }
+  .kpi .value.orange { color: #ea580c; }
+  .kpi .value.gray { color: #64748b; }
+  .kpi .change { font-size: 11px; margin-top: 2px; }
+  .kpi .change.up { color: #16a34a; }
+  .kpi .change.down { color: #dc2626; }
+  .kpi .change.flat { color: #94a3b8; }
+  .chart-section { margin-top: 16px; }
+  .chart-section h3 { font-size: 14px; font-weight: 600; color: #475569; margin-bottom: 12px; }
+  .chart-wrap { position: relative; height: 200px; }
+  .note { text-align: center; font-size: 12px; color: #94a3b8; padding: 16px; }
+  @media (max-width: 600px) { .kpi-row { grid-template-columns: repeat(2, 1fr); } }
+</style>
+</head>
+<body>
+
+<h2>霸王茶姬 GEO监测看板</h2>
+<p class="subtitle">美团茶饮 GEO 监测 ｜ 100词 ｜ 豆包 ｜ 初始基线 08/20</p>
+
+<div class="platform">
+  <div class="platform-title"><span class="dot" style="background:#2563eb"></span>豆包</div>
+  
+  <div class="kpi-row">
+    <div class="kpi">
+      <div class="label">推荐率</div>
+      <div class="value green">86.79%</div>
+      <div class="change flat">初始基线</div>
+    </div>
+    <div class="kpi">
+      <div class="label">提及率</div>
+      <div class="value blue">86.79%</div>
+      <div class="change flat">初始基线</div>
+    </div>
+    <div class="kpi">
+      <div class="label">有推荐</div>
+      <div class="value">99词</div>
+      <div class="change flat">共100词</div>
+    </div>
+    <div class="kpi">
+      <div class="label">有提及 / 无提及</div>
+      <div class="value gray">99 / 1</div>
+    </div>
+  </div>
+
+  <div class="chart-section">
+    <h3>每日达标分布（有推荐 / 有提及 / 无提及）</h3>
+    <div class="chart-wrap"><canvas id="dbBar"></canvas></div>
+  </div>
+</div>
+
+<div class="note">
+  数据来源：截图数据目录 Excel 报告 ｜ 初始基线日期 08/20（人工提供） ｜ 达标标准：推荐率 ≥ 80%<br>
+  效果统计分档：有推荐（"有推荐有引导" + "有推荐"）/ 有提及（"有提及"）/ 无提及（其他）<br>
+  生成时间：2026-08-21
+</div>
+
+<script>
+Chart.register(ChartDataLabels);
+Chart.defaults.color = '#64748b';
+Chart.defaults.borderColor = '#e5e7eb';
+Chart.defaults.font.family = '-apple-system,"SF Pro Display","PingFang SC",sans-serif';
+
+new Chart(document.getElementById('dbBar'), {
+  type: 'bar',
+  data: {
+    labels: ['08/20 初始'],
+    datasets: [
+      { label: '有推荐', data: [99], backgroundColor: '#22c55e', borderRadius: 4 },
+      { label: '有提及', data: [0], backgroundColor: '#fb923c', borderRadius: 4 },
+      { label: '无提及', data: [1], backgroundColor: '#cbd5e1', borderRadius: 4 }
+    ]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: {
+      legend: { position: 'top', labels: { usePointStyle: true, padding: 16 } },
+      datalabels: { display: function(ctx) { return ctx.dataset.data[0] > 0; }, color: '#fff', font: { weight: '600', size: 11 }, formatter: v => v }
+    },
+    scales: { x: { stacked: true, grid: { display: false } }, y: { stacked: true, max: 100, ticks: { callback: v => v }, grid: { color: '#f0f0f5' } } }
+  }
+});
+</script>
+
+</body>
+</html>

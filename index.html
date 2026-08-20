@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>美团 GEO 监测看板</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system,"SF Pro Display","PingFang SC",sans-serif; background: #f8fafc; color: #1e293b; min-height: 100vh; }
+  .header { background: linear-gradient(135deg, #1e40af, #3b82f6); color: #fff; padding: 40px 24px 32px; text-align: center; }
+  .header h1 { font-size: 28px; font-weight: 700; margin-bottom: 8px; }
+  .header p { font-size: 14px; opacity: 0.8; }
+  .grid { max-width: 960px; margin: -20px auto 40px; padding: 0 16px; display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
+  .card { background: #fff; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); overflow: hidden; transition: box-shadow 0.2s, transform 0.2s; text-decoration: none; color: inherit; display: flex; flex-direction: column; }
+  .card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.12); transform: translateY(-2px); }
+  .card-badge { display: inline-block; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; margin-bottom: 12px; }
+  .badge-active { background: #dcfce7; color: #166534; }
+  .badge-pending { background: #fef9c3; color: #854d0e; }
+  .badge-live { background: #dbeafe; color: #1e40af; }
+  .card-body { padding: 20px; flex: 1; }
+  .card-title { font-size: 18px; font-weight: 700; margin-bottom: 6px; }
+  .card-desc { font-size: 13px; color: #64748b; line-height: 1.5; margin-bottom: 16px; }
+  .card-metrics { display: flex; gap: 12px; flex-wrap: wrap; }
+  .metric { background: #f8fafc; border-radius: 8px; padding: 8px 12px; min-width: 0; }
+  .metric .label { font-size: 11px; color: #94a3b8; margin-bottom: 2px; }
+  .metric .value { font-size: 16px; font-weight: 700; }
+  .metric .value.green { color: #16a34a; }
+  .metric .value.blue { color: #2563eb; }
+  .metric .value.orange { color: #ea580c; }
+  .card-footer { padding: 12px 20px; border-top: 1px solid #f1f5f9; font-size: 12px; color: #94a3b8; display: flex; justify-content: space-between; align-items: center; }
+  .card-footer .arrow { font-size: 16px; color: #cbd5e1; }
+  .section-title { max-width: 960px; margin: 32px auto 12px; padding: 0 16px; font-size: 14px; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; }
+  .updated { text-align: center; padding: 24px; font-size: 12px; color: #94a3b8; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>美团 GEO 监测看板</h1>
+  <p>实时追踪各品类在 AI 搜索中的品牌表现</p>
+</div>
+
+<div class="section-title">医美</div>
+<div class="grid">
+  <a class="card" href="qudou.html">
+    <div class="card-body">
+      <span class="card-badge badge-live">监测中</span>
+      <div class="card-title">祛痘</div>
+      <div class="card-desc">美团医美祛痘品类 GEO 监测，覆盖106个关键词，豆包 + DeepSeek 双平台。</div>
+      <div class="card-metrics">
+        <div class="metric"><div class="label">豆包推荐率</div><div class="value green">39.06%</div></div>
+        <div class="metric"><div class="label">DS推荐率</div><div class="value blue">7.96%</div></div>
+        <div class="metric"><div class="label">词数</div><div class="value">106</div></div>
+      </div>
+    </div>
+    <div class="card-footer"><span>更新至 08/20</span><span class="arrow">→</span></div>
+  </a>
+
+  <a class="card" href="meiyan.html">
+    <div class="card-body">
+      <span class="card-badge badge-live">监测中</span>
+      <div class="card-title">美眼</div>
+      <div class="card-desc">美团医美美眼品类 GEO 监测，覆盖115个关键词，豆包 + DeepSeek 双平台。</div>
+      <div class="card-metrics">
+        <div class="metric"><div class="label">豆包推荐率</div><div class="value green">16.35%</div></div>
+        <div class="metric"><div class="label">DS推荐率</div><div class="value blue">42.17%</div></div>
+        <div class="metric"><div class="label">词数</div><div class="value">115</div></div>
+      </div>
+    </div>
+    <div class="card-footer"><span>更新至 08/20</span><span class="arrow">→</span></div>
+  </a>
+</div>
+
+<div class="section-title">茶饮</div>
+<div class="grid">
+  <a class="card" href="bawangchaji.html">
+    <div class="card-body">
+      <span class="card-badge badge-active">初始基线</span>
+      <div class="card-title">霸王茶姬</div>
+      <div class="card-desc">美团茶饮霸王茶姬 GEO 监测，覆盖100个关键词，豆包单平台。</div>
+      <div class="card-metrics">
+        <div class="metric"><div class="label">豆包推荐率</div><div class="value green">86.79%</div></div>
+        <div class="metric"><div class="label">有推荐</div><div class="value">99词</div></div>
+      </div>
+    </div>
+    <div class="card-footer"><span>08/20 初始基线</span><span class="arrow">→</span></div>
+  </a>
+
+  <a class="card" href="chapubu.html">
+    <div class="card-body">
+      <span class="card-badge badge-active">初始基线</span>
+      <div class="card-title">茶瀑布</div>
+      <div class="card-desc">美团茶饮茶瀑布 GEO 监测，覆盖100个关键词，豆包单平台。</div>
+      <div class="card-metrics">
+        <div class="metric"><div class="label">豆包推荐率</div><div class="value orange">49.25%</div></div>
+        <div class="metric"><div class="label">有推荐</div><div class="value">75词</div></div>
+      </div>
+    </div>
+    <div class="card-footer"><span>08/20 初始基线</span><span class="arrow">→</span></div>
+  </a>
+
+  <a class="card" href="hushangayi.html" style="opacity: 0.6; pointer-events: none;">
+    <div class="card-body">
+      <span class="card-badge badge-pending">待启动</span>
+      <div class="card-title">沪上阿姨</div>
+      <div class="card-desc">美团茶饮沪上阿姨 GEO 监测，豆包单平台。初始基线待 08/21 数据。</div>
+      <div class="card-metrics">
+        <div class="metric"><div class="label">状态</div><div class="value" style="font-size:13px;">等待初始数据</div></div>
+      </div>
+    </div>
+    <div class="card-footer"><span>08/21 预计上线</span><span class="arrow">→</span></div>
+  </a>
+</div>
+
+<div class="updated">最后更新：2026-08-21</div>
+
+</body>
+</html>

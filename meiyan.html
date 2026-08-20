@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>美团美眼 GEO监测看板</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,"SF Pro Display","PingFang SC","Microsoft YaHei",sans-serif;background:#f5f6fa;color:#1a1a2e;min-height:100vh}
+.header{padding:28px 40px 0}
+.header h1{font-size:21px;font-weight:700;color:#1a1a2e}
+.header .sub{font-size:12px;color:#7a8ba8;margin-top:4px;line-height:1.6}
+
+.platform-section{padding:20px 40px 0}
+.platform-label{font-size:15px;font-weight:700;color:#1a1a2e;padding-bottom:12px;border-bottom:2px solid #e5e7eb;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.platform-label .dot{width:10px;height:10px;border-radius:50%;display:inline-block}
+.dot.doubao{background:#3b82f6}
+.dot.ds{background:#8b5cf6}
+
+.kpi-row{display:flex;gap:14px;margin-bottom:16px;flex-wrap:wrap}
+.kpi{flex:1;min-width:130px;background:#fff;border-radius:10px;padding:14px 16px;border:1px solid #e5e7eb;box-shadow:0 1px 3px rgba(0,0,0,.04)}
+.kpi .label{font-size:10px;color:#7a8ba8;text-transform:uppercase;letter-spacing:.3px}
+.kpi .value{font-size:24px;font-weight:700;margin-top:3px}
+.kpi .sub2{font-size:11px;margin-top:3px;color:#64748b}
+.kpi .change{font-size:11px;margin-top:2px}
+.kpi .change.up{color:#10b981}
+.kpi .change.down{color:#ef4444}
+.kpi .change.flat{color:#7a8ba8}
+.kpi .green{color:#10b981}
+.kpi .blue{color:#3b82f6}
+.kpi .orange{color:#f59e0b}
+.kpi .red{color:#ef4444}
+.kpi .purple{color:#8b5cf6}
+.kpi .gray{color:#94a3b8}
+
+.chart-row{display:flex;gap:14px;margin-bottom:20px;flex-wrap:wrap}
+.chart-box{background:#fff;border-radius:10px;padding:20px;border:1px solid #e5e7eb;box-shadow:0 1px 3px rgba(0,0,0,.04);flex:1;min-width:280px}
+.chart-box h3{font-size:13px;font-weight:600;color:#1a1a2e;margin-bottom:12px}
+.chart-wrap{position:relative;height:260px}
+.chart-box.wide{min-width:100%;flex-basis:100%}
+
+.note{font-size:11px;color:#999;padding:20px 40px 28px;line-height:1.6}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>美团美眼 · GEO监测看板</h1>
+  <div class="sub">监测周期 初始基线 08/09 → 08/12 – 08/19 ｜ 产线：美团医美-美眼 ｜ 115题 × 豆包 + DeepSeek</div>
+</div>
+
+<!-- ===================== 豆包 ===================== -->
+<div class="platform-section">
+  <div class="platform-label"><span class="dot doubao"></span> 豆包</div>
+  <div class="kpi-row" id="db-kpi"></div>
+  <div class="chart-row">
+    <div class="chart-box wide">
+      <h3>推荐率 vs 提及率趋势（实线=推荐率 / 虚线=提及率）</h3>
+      <div class="chart-wrap"><canvas id="dbTrend"></canvas></div>
+    </div>
+  </div>
+  <div class="chart-row">
+    <div class="chart-box wide">
+      <h3>每日达标分布（有推荐 / 有提及 / 无提及）</h3>
+      <div class="chart-wrap"><canvas id="dbBar"></canvas></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== DeepSeek ===================== -->
+<div class="platform-section" style="margin-top:12px">
+  <div class="platform-label"><span class="dot ds"></span> DeepSeek</div>
+  <div class="kpi-row" id="ds-kpi"></div>
+  <div class="chart-row">
+    <div class="chart-box wide">
+      <h3>推荐率 vs 提及率趋势（实线=推荐率 / 虚线=提及率）</h3>
+      <div class="chart-wrap"><canvas id="dsTrend"></canvas></div>
+    </div>
+  </div>
+  <div class="chart-row">
+    <div class="chart-box wide">
+      <h3>每日达标分布（有推荐 / 有提及 / 无提及）</h3>
+      <div class="chart-wrap"><canvas id="dsBar"></canvas></div>
+    </div>
+  </div>
+</div>
+
+<div class="note">
+  数据来源：截图数据目录 Excel 报告 ｜ 初始基线日期 08/09（人工提供） ｜ 达标标准：推荐率 ≥ 80%<br>
+  效果统计分档：有推荐（"有推荐有引导"）/ 有提及（"有提及"）/ 无提及（其他）<br>
+  生成时间：2026-08-19
+</div>
+
+<script>
+// 注册 datalabels 插件（全局）
+Chart.register(ChartDataLabels);
+
+// 初始基线（08/09）+ 每日数据（08/12 - 08/19）
+const BASELINE_DATE = '初始';
+const DATES = [BASELINE_DATE, '08/12', '08/13', '08/14', '08/15', '08/16', '08/17', '08/18', '08/19', '08/20'];
+
+const DB = {
+  recommend: [10.61, 7.13, 12.70, 12.3, 10.3, 9.6, 10.9, 9.6, 8.5, 16.35],
+  mention:   [63.74, 48.87, 54.70, 52.3, 54.4, 56.1, 57.5, 56.5, 57.0, 59.57],
+  hasReco:   [19, 0, 15, 3, 1, 0, 0, 1, 0, 5],
+  hasMention:[83, 90, 48, 91, 97, 105, 100, 96, 104, 97],
+  noMention: [13, 25, 52, 21, 17, 10, 15, 18, 11, 13]
+};
+
+const DS = {
+  recommend: [2.35, 1.91, 2.96, 2.2, 3.2, 2.8, 3.7, 2.0, 3.0, 42.17],
+  mention:   [59.91, 56.26, 55.91, 56.3, 60.0, 53.7, 52.3, 55.9, 53.2, 68.61],
+  hasReco:   [14, 2, 3, 0, 0, 0, 0, 0, 0, 32],
+  hasMention:[90, 63, 61, 105, 107, 107, 102, 104, 101, 81],
+  noMention: [11, 50, 51, 10, 8, 8, 13, 11, 14, 2]
+};
+
+function diff(v0, v1) {
+  const d = (v1 - v0).toFixed(1);
+  if (d > 0) return { text: `较初始 +${d}pp`, cls: 'up' };
+  if (d < 0) return { text: `较初始 ${d}pp`, cls: 'down' };
+  return { text: '较初始 持平', cls: 'flat' };
+}
+
+function kpiHTML(label, value, cls, ch) {
+  return `<div class="kpi"><div class="label">${label}</div><div class="value ${cls}">${value}</div><div class="change ${ch.cls}">${ch.text}</div></div>`;
+}
+
+function renderKPIs(id, data, platformName) {
+  const c = document.getElementById(id);
+  const first = { r: data.recommend[0], m: data.mention[0] };
+  const last  = { r: data.recommend[data.recommend.length-1], m: data.mention[data.mention.length-1] };
+  const rc = diff(first.r, last.r);
+  const mc = diff(first.m, last.m);
+
+  const todayReco = data.hasReco[data.hasReco.length - 1];
+  const todayMention = data.hasMention[data.hasMention.length - 1];
+  const todayNone = data.noMention[data.noMention.length - 1];
+
+  c.innerHTML =
+    kpiHTML('推荐率（今日）', last.r + '%', rc.cls === 'up' ? 'green' : 'orange', rc) +
+    kpiHTML('提及率（今日）', last.m + '%', mc.cls === 'up' ? 'blue' : 'purple', mc) +
+    kpiHTML('有推荐', todayReco + '题', todayReco > data.hasReco[0] ? 'green' : 'orange',
+      diff(data.hasReco[0], todayReco)) +
+    kpiHTML('有提及 / 无提及', todayMention + ' / ' + todayNone, 'gray', { text: '', cls: 'flat' });
+}
+
+renderKPIs('db-kpi', DB, '豆包');
+renderKPIs('ds-kpi', DS, 'DeepSeek');
+
+// Chart defaults
+Chart.defaults.color = '#64748b';
+Chart.defaults.borderColor = '#e5e7eb';
+Chart.defaults.font.family = '-apple-system,"SF Pro Display","PingFang SC",sans-serif';
+
+// ===== Trend chart =====
+function trendChart(canvasId, data, color) {
+  new Chart(document.getElementById(canvasId), {
+    type: 'line',
+    data: {
+      labels: DATES,
+      datasets: [
+        {
+          label: '推荐率',
+          data: data.recommend,
+          borderColor: color,
+          backgroundColor: color + '18',
+          borderWidth: 2.5,
+          borderDash: [6, 4],
+          pointRadius: 5,
+          pointBackgroundColor: '#fff',
+          pointBorderColor: color,
+          pointBorderWidth: 2,
+          tension: 0.3,
+          fill: true,
+          datalabels: {
+            display: function(ctx) { return ctx.datasetIndex === 0; },
+            color: color,
+            anchor: 'end',
+            align: 'top',
+            offset: 4,
+            font: { size: 11, weight: '600' },
+            formatter: v => v + '%'
+          }
+        },
+        {
+          label: '提及率',
+          data: data.mention,
+          borderColor: color,
+          borderWidth: 2,
+          borderWidth: 2,
+          pointRadius: 4,
+          pointBackgroundColor: color,
+          pointBorderColor: '#fff',
+          pointBorderWidth: 1,
+          tension: 0.3,
+          fill: false,
+          datalabels: {
+            display: false
+          }
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend: { position: 'top', labels: { usePointStyle: true, padding: 16 } },
+        tooltip: { callbacks: { label: c => `${c.dataset.label}: ${c.parsed.y}%` } }
+      },
+      scales: {
+        y: { min: 0, max: 70, ticks: { callback: v => v + '%' }, grid: { color: '#f0f0f5' } },
+        x: { grid: { display: false } }
+      }
+    }
+  });
+}
+
+// ===== Stacked bar chart with labels =====
+function barChart(canvasId, data) {
+  new Chart(document.getElementById(canvasId), {
+    type: 'bar',
+    data: {
+      labels: DATES,
+      datasets: [
+        {
+          label: '有推荐',
+          data: data.hasReco,
+          backgroundColor: '#10b981',
+          borderRadius: { topLeft: 3, topRight: 3 },
+          barPercentage: 0.65,
+          categoryPercentage: 0.6,
+          datalabels: {
+            display: true,
+            color: function(ctx) {
+              const v = ctx.dataset.data[ctx.dataIndex];
+              return v <= 3 ? '#10b981' : '#fff';
+            },
+            font: { size: 11, weight: '700' },
+            anchor: function(ctx) {
+              return ctx.dataset.data[ctx.dataIndex] <= 3 ? 'end' : 'center';
+            },
+            align: function(ctx) {
+              return ctx.dataset.data[ctx.dataIndex] <= 3 ? 'end' : 'center';
+            },
+            offset: function(ctx) {
+              return ctx.dataset.data[ctx.dataIndex] <= 3 ? -4 : 0;
+            },
+            formatter: v => v
+          }
+        },
+        {
+          label: '有提及',
+          data: data.hasMention,
+          backgroundColor: '#f59e0b',
+          barPercentage: 0.65,
+          categoryPercentage: 0.6,
+          datalabels: {
+            display: function(ctx) { return ctx.dataset.data[ctx.dataIndex] >= 3; },
+            color: '#fff',
+            font: { size: 11, weight: '700' },
+            anchor: 'center',
+            align: 'center',
+            formatter: v => v
+          }
+        },
+        {
+          label: '无提及',
+          data: data.noMention,
+          backgroundColor: '#cbd5e1',
+          borderRadius: { bottomLeft: 3, bottomRight: 3 },
+          barPercentage: 0.65,
+          categoryPercentage: 0.6,
+          datalabels: {
+            display: function(ctx) { return ctx.dataset.data[ctx.dataIndex] >= 3; },
+            color: '#475569',
+            font: { size: 11, weight: '700' },
+            anchor: 'center',
+            align: 'center',
+            formatter: v => v
+          }
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend: { position: 'top', labels: { usePointStyle: true, padding: 16 } },
+        tooltip: { callbacks: { label: c => `${c.dataset.label}: ${c.parsed.y}题` } }
+      },
+      scales: {
+        y: { stacked: true, min: 0, max: 120, ticks: { callback: v => v + '题' }, grid: { color: '#f0f0f5' } },
+        x: { stacked: true, grid: { display: false } }
+      }
+    }
+  });
+}
+
+trendChart('dbTrend', DB, '#3b82f6');
+trendChart('dsTrend', DS, '#8b5cf6');
+barChart('dbBar', DB);
+barChart('dsBar', DS);
+</script>
+</body>
+</html>
