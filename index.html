@@ -27,6 +27,9 @@
   .metric .value.green { color: #16a34a; }
   .metric .value.blue { color: #2563eb; }
   .metric .value.orange { color: #ea580c; }
+  .tier-row { display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap; }
+  .tier { font-size: 11px; color: #64748b; background: #f1f5f9; border-radius: 4px; padding: 3px 8px; white-space: nowrap; }
+  .tier .n { font-weight: 700; }
   .card-footer { padding: 12px 20px; border-top: 1px solid #f1f5f9; font-size: 12px; color: #94a3b8; display: flex; justify-content: space-between; align-items: center; }
   .card-footer .arrow { font-size: 16px; color: #cbd5e1; }
   .section-title { max-width: 960px; margin: 32px auto 12px; padding: 0 16px; font-size: 14px; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; }
@@ -52,6 +55,14 @@
         <div class="metric"><div class="label">DS推荐率</div><div class="value blue">7.96%</div></div>
         <div class="metric"><div class="label">词数</div><div class="value">106</div></div>
       </div>
+      <div class="tier-row">
+        <span class="tier">DB 有推荐 <span class="n">29</span></span>
+        <span class="tier">DB 有提及 <span class="n">56</span></span>
+        <span class="tier">DB 无提及 <span class="n">21</span></span>
+        <span class="tier">DS 有推荐 <span class="n">2</span></span>
+        <span class="tier">DS 有提及 <span class="n">79</span></span>
+        <span class="tier">DS 无提及 <span class="n">22</span></span>
+      </div>
     </div>
     <div class="card-footer"><span>更新至 08/20</span><span class="arrow">→</span></div>
   </a>
@@ -65,6 +76,14 @@
         <div class="metric"><div class="label">豆包推荐率</div><div class="value green">16.35%</div></div>
         <div class="metric"><div class="label">DS推荐率</div><div class="value blue">42.17%</div></div>
         <div class="metric"><div class="label">词数</div><div class="value">115</div></div>
+      </div>
+      <div class="tier-row">
+        <span class="tier">DB 有推荐 <span class="n">5</span></span>
+        <span class="tier">DB 有提及 <span class="n">97</span></span>
+        <span class="tier">DB 无提及 <span class="n">13</span></span>
+        <span class="tier">DS 有推荐 <span class="n">32</span></span>
+        <span class="tier">DS 有提及 <span class="n">81</span></span>
+        <span class="tier">DS 无提及 <span class="n">2</span></span>
       </div>
     </div>
     <div class="card-footer"><span>更新至 08/20</span><span class="arrow">→</span></div>
@@ -80,7 +99,12 @@
       <div class="card-desc">美团茶饮霸王茶姬 GEO 监测，覆盖100个关键词，豆包单平台。</div>
       <div class="card-metrics">
         <div class="metric"><div class="label">豆包推荐率</div><div class="value green">86.79%</div></div>
-        <div class="metric"><div class="label">有推荐</div><div class="value">99词</div></div>
+        <div class="metric"><div class="label">词数</div><div class="value">100</div></div>
+      </div>
+      <div class="tier-row">
+        <span class="tier">有推荐 <span class="n">99</span></span>
+        <span class="tier">有提及 <span class="n">0</span></span>
+        <span class="tier">无提及 <span class="n">1</span></span>
       </div>
     </div>
     <div class="card-footer"><span>08/20 初始基线</span><span class="arrow">→</span></div>
@@ -93,7 +117,12 @@
       <div class="card-desc">美团茶饮茶瀑布 GEO 监测，覆盖100个关键词，豆包单平台。</div>
       <div class="card-metrics">
         <div class="metric"><div class="label">豆包推荐率</div><div class="value orange">49.25%</div></div>
-        <div class="metric"><div class="label">有推荐</div><div class="value">75词</div></div>
+        <div class="metric"><div class="label">词数</div><div class="value">100</div></div>
+      </div>
+      <div class="tier-row">
+        <span class="tier">有推荐 <span class="n">75</span></span>
+        <span class="tier">有提及 <span class="n">0</span></span>
+        <span class="tier">无提及 <span class="n">25</span></span>
       </div>
     </div>
     <div class="card-footer"><span>08/20 初始基线</span><span class="arrow">→</span></div>
