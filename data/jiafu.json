@@ -1,0 +1,28 @@
+{
+  "project_key": "jiafu",
+  "label": "美团家服",
+  "threshold": 0.8,
+  "emoji": "🏠",
+  "platforms": {
+    "豆包": {
+      "dates": [
+        "08/17"
+      ],
+      "recommend": [
+        91.2
+      ],
+      "mention": [
+        97.0
+      ],
+      "hasReco": [
+        35
+      ],
+      "hasMention": [
+        5
+      ],
+      "noMention": [
+        0
+      ]
+    }
+  }
+}

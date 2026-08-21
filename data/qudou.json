@@ -1,0 +1,54 @@
+{
+  "project_key": "qudou",
+  "label": "美团医美-祛痘",
+  "threshold": 0.8,
+  "emoji": "🔥",
+  "platforms": {
+    "DeepSeek": {
+      "dates": [
+        "08/17",
+        "08/21"
+      ],
+      "recommend": [
+        8.9,
+        9.0
+      ],
+      "mention": [
+        52.5,
+        53.9
+      ],
+      "hasReco": [
+        2,
+        2
+      ],
+      "hasMention": [
+        79,
+        79
+      ],
+      "noMention": [
+        25,
+        25
+      ]
+    },
+    "豆包": {
+      "dates": [
+        "08/17"
+      ],
+      "recommend": [
+        35.5
+      ],
+      "mention": [
+        57.0
+      ],
+      "hasReco": [
+        19
+      ],
+      "hasMention": [
+        65
+      ],
+      "noMention": [
+        22
+      ]
+    }
+  }
+}

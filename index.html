@@ -31,118 +31,154 @@
   .tier { font-size: 11px; color: #64748b; background: #f1f5f9; border-radius: 4px; padding: 3px 8px; white-space: nowrap; }
   .tier .n { font-weight: 700; }
   .card-footer { padding: 12px 20px; border-top: 1px solid #f1f5f9; font-size: 12px; color: #94a3b8; display: flex; justify-content: space-between; align-items: center; }
-  .card-footer .arrow { font-size: 16px; color: #cbd5e1; }
-  .section-title { max-width: 960px; margin: 32px auto 12px; padding: 0 16px; font-size: 14px; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; }
-  .updated { text-align: center; padding: 24px; font-size: 12px; color: #94a3b8; }
+  .loading { text-align: center; padding: 60px; color: #94a3b8; }
+  .empty { text-align: center; padding: 60px; color: #94a3b8; font-size: 14px; }
 </style>
 </head>
 <body>
 
 <div class="header">
-  <h1>美团 GEO 监测看板</h1>
-  <p>实时追踪各品类在 AI 搜索中的品牌表现</p>
+  <h1>🎯 美团 GEO 监测看板</h1>
+  <p id="updateTime">加载中...</p>
 </div>
 
-<div class="section-title">医美</div>
-<div class="grid">
-  <a class="card" href="qudou.html">
-    <div class="card-body">
-      <span class="card-badge badge-live">监测中</span>
-      <div class="card-title">祛痘</div>
-      <div class="card-desc">美团医美祛痘品类 GEO 监测，覆盖106个关键词，豆包 + DeepSeek 双平台。</div>
-      <div class="card-metrics">
-        <div class="metric"><div class="label">豆包推荐率</div><div class="value green">39.06%</div></div>
-        <div class="metric"><div class="label">DS推荐率</div><div class="value blue">7.96%</div></div>
-        <div class="metric"><div class="label">词数</div><div class="value">106</div></div>
-      </div>
-      <div class="tier-row">
-        <span class="tier">DB 有推荐 <span class="n">29</span></span>
-        <span class="tier">DB 有提及 <span class="n">56</span></span>
-        <span class="tier">DB 无提及 <span class="n">21</span></span>
-        <span class="tier">DS 有推荐 <span class="n">2</span></span>
-        <span class="tier">DS 有提及 <span class="n">79</span></span>
-        <span class="tier">DS 无提及 <span class="n">22</span></span>
-      </div>
-    </div>
-    <div class="card-footer"><span>更新至 08/20</span><span class="arrow">→</span></div>
-  </a>
-
-  <a class="card" href="meiyan.html">
-    <div class="card-body">
-      <span class="card-badge badge-live">监测中</span>
-      <div class="card-title">美眼</div>
-      <div class="card-desc">美团医美美眼品类 GEO 监测，覆盖115个关键词，豆包 + DeepSeek 双平台。</div>
-      <div class="card-metrics">
-        <div class="metric"><div class="label">豆包推荐率</div><div class="value green">16.35%</div></div>
-        <div class="metric"><div class="label">DS推荐率</div><div class="value blue">42.17%</div></div>
-        <div class="metric"><div class="label">词数</div><div class="value">115</div></div>
-      </div>
-      <div class="tier-row">
-        <span class="tier">DB 有推荐 <span class="n">5</span></span>
-        <span class="tier">DB 有提及 <span class="n">97</span></span>
-        <span class="tier">DB 无提及 <span class="n">13</span></span>
-        <span class="tier">DS 有推荐 <span class="n">32</span></span>
-        <span class="tier">DS 有提及 <span class="n">81</span></span>
-        <span class="tier">DS 无提及 <span class="n">2</span></span>
-      </div>
-    </div>
-    <div class="card-footer"><span>更新至 08/20</span><span class="arrow">→</span></div>
-  </a>
+<div class="grid" id="grid">
+  <div class="loading">正在加载项目数据...</div>
 </div>
 
-<div class="section-title">茶饮</div>
-<div class="grid">
-  <a class="card" href="bawangchaji.html">
-    <div class="card-body">
-      <span class="card-badge badge-active">初始基线</span>
-      <div class="card-title">霸王茶姬</div>
-      <div class="card-desc">美团茶饮霸王茶姬 GEO 监测，覆盖100个关键词，豆包单平台。</div>
-      <div class="card-metrics">
-        <div class="metric"><div class="label">豆包推荐率</div><div class="value green">91.50%</div></div>
-        <div class="metric"><div class="label">引导率</div><div class="value" style="color:#dc2626">0%</div></div>
-        <div class="metric"><div class="label">词数</div><div class="value">100</div></div>
-      </div>
-      <div class="tier-row">
-        <span class="tier">有推荐 <span class="n">87</span></span>
-        <span class="tier">有提及 <span class="n">12</span></span>
-        <span class="tier">无提及 <span class="n">1</span></span>
-      </div>
-    </div>
-    <div class="card-footer"><span>08/20 初始基线</span><span class="arrow">→</span></div>
-  </a>
+<script>
+// 项目注册表 — 新增项目只需在此添加
+const PROJECTS = [
+  { key: 'qudou',       file: 'qudou.html',       emoji: '🔥', name: '美团医美·祛痘',   cat: '医美' },
+  { key: 'meiyan',      file: 'meiyan.html',       emoji: '👁️', name: '美团医美·美眼',   cat: '医美' },
+  { key: 'qiyeban',     file: 'qiyeban.html',      emoji: '🏢', name: '美团企业版',       cat: '医美' },
+  { key: 'jiafu',       file: 'jiafu.html',        emoji: '🏠', name: '美团家服',         cat: '生活' },
+  { key: 'bawangchaji', file: 'bawangchaji.html',  emoji: '🍵', name: '霸王茶姬',         cat: '茶饮' },
+  { key: 'chapubu',     file: 'chapubu.html',      emoji: '🍵', name: '茶瀑布',           cat: '茶饮' },
+  { key: 'hushangayi',  file: 'hushangayi.html',   emoji: '🍵', name: '沪上阿姨',         cat: '茶饮' },
+];
 
-  <a class="card" href="chapubu.html">
-    <div class="card-body">
-      <span class="card-badge badge-active">初始基线</span>
-      <div class="card-title">茶瀑布</div>
-      <div class="card-desc">美团茶饮茶瀑布 GEO 监测，覆盖100个关键词，豆包单平台。</div>
-      <div class="card-metrics">
-        <div class="metric"><div class="label">豆包推荐率</div><div class="value orange">52.20%</div></div>
-        <div class="metric"><div class="label">词数</div><div class="value">100</div></div>
-      </div>
-      <div class="tier-row">
-        <span class="tier">有推荐 <span class="n">38</span></span>
-        <span class="tier">有提及 <span class="n">36</span></span>
-        <span class="tier">无提及 <span class="n">26</span></span>
-      </div>
-    </div>
-    <div class="card-footer"><span>08/20 初始基线</span><span class="arrow">→</span></div>
-  </a>
+async function loadProject(proj) {
+  try {
+    const resp = await fetch(`data/${proj.key}.json`);
+    if (!resp.ok) return null;
+    return await resp.json();
+  } catch { return null; }
+}
 
-  <a class="card" href="hushangayi.html" style="opacity: 0.6; pointer-events: none;">
-    <div class="card-body">
-      <span class="card-badge badge-pending">待启动</span>
-      <div class="card-title">沪上阿姨</div>
-      <div class="card-desc">美团茶饮沪上阿姨 GEO 监测，豆包单平台。初始基线待 08/21 数据。</div>
-      <div class="card-metrics">
-        <div class="metric"><div class="label">状态</div><div class="value" style="font-size:13px;">等待初始数据</div></div>
-      </div>
-    </div>
-    <div class="card-footer"><span>08/21 预计上线</span><span class="arrow">→</span></div>
-  </a>
-</div>
+function latestPlatform(pdata) {
+  // 取第一个平台的最新数据
+  const platforms = Object.keys(pdata.platforms || {});
+  if (!platforms.length) return null;
+  const p = pdata.platforms[platforms[0]];
+  const last = (p.recommend.length || 1) - 1;
+  return {
+    platform: platforms[0],
+    recommend: p.recommend[last],
+    mention: p.mention[last],
+    hasReco: p.hasReco[last],
+    hasMention: p.hasMention[last],
+    noMention: p.noMention[last],
+    total: p.hasReco[last] + p.hasMention[last] + p.noMention[last],
+    date: p.dates[last],
+    is达标: p.recommend[last] >= (pdata.threshold || 0.8) * 100
+  };
+}
 
-<div class="updated">最后更新：2026-08-21</div>
+async function main() {
+  const grid = document.getElementById('grid');
+  const results = await Promise.all(PROJECTS.map(async proj => {
+    const data = await loadProject(proj);
+    return { proj, data };
+  }));
 
+  // 分组：有数据的在前，无数据的在后
+  const withData = results.filter(r => r.data);
+  const noData = results.filter(r => !r.data);
+
+  if (withData.length === 0 && noData.length === 0) {
+    grid.innerHTML = '<div class="empty">暂无项目数据</div>';
+    document.getElementById('updateTime').textContent = '暂无数据';
+    return;
+  }
+
+  let html = '';
+  for (const { proj, data } of withData) {
+    const latest = latestPlatform(data);
+    if (!latest) continue;
+
+    const badgeCls = latest.is达标 ? 'badge-active' : 'badge-pending';
+    const badgeText = latest.is达标 ? '达标' : '未达标';
+    const valueCls = latest.is达标 ? 'green' : 'orange';
+
+    // 所有平台的最新推荐率
+    const allPlatforms = Object.keys(data.platforms || {});
+    let tierHtml = '';
+    for (const pname of allPlatforms) {
+      const pd = data.platforms[pname];
+      const last = (pd.recommend.length || 1) - 1;
+      const reco = pd.recommend[last];
+      const isP达标 = reco >= (data.threshold || 0.8) * 100;
+      tierHtml += `<span class="tier">${pname} 推荐率 <span class="n" style="color:${isP达标 ? '#16a34a' : '#ea580c'}">${reco.toFixed(1)}%</span></span>`;
+    }
+
+    html += `
+      <a class="card" href="${proj.file}">
+        <div class="card-body">
+          <span class="card-badge ${badgeCls}">${badgeText}</span>
+          <div class="card-title">${proj.emoji} ${proj.name}</div>
+          <div class="card-desc">${data.label} ｜ ${latest.total}题</div>
+          <div class="card-metrics">
+            <div class="metric">
+              <div class="label">推荐率</div>
+              <div class="value ${valueCls}">${latest.recommend.toFixed(1)}%</div>
+            </div>
+            <div class="metric">
+              <div class="label">提及率</div>
+              <div class="value blue">${latest.mention.toFixed(1)}%</div>
+            </div>
+            <div class="metric">
+              <div class="label">有推荐</div>
+              <div class="value green">${latest.hasReco}题</div>
+            </div>
+          </div>
+          <div class="tier-row">${tierHtml}</div>
+        </div>
+        <div class="card-footer">
+          <span>${proj.cat}</span>
+          <span>${latest.date} · ${latest.platform}</span>
+        </div>
+      </a>`;
+  }
+
+  // 无数据的项目
+  for (const { proj } of noData) {
+    html += `
+      <a class="card" href="${proj.file}" style="opacity:0.5">
+        <div class="card-body">
+          <span class="card-badge badge-pending">待数据</span>
+          <div class="card-title">${proj.emoji} ${proj.name}</div>
+          <div class="card-desc">暂无监测数据</div>
+        </div>
+        <div class="card-footer">
+          <span>${proj.cat}</span>
+          <span>—</span>
+        </div>
+      </a>`;
+  }
+
+  grid.innerHTML = html;
+
+  // 更新时间
+  const dates = withData.map(r => {
+    const l = latestPlatform(r.data);
+    return l ? l.date : '';
+  }).filter(Boolean);
+  document.getElementById('updateTime').textContent =
+    dates.length ? `最新数据: ${dates.sort().slice(-1)[0]} ｜ ${withData.length} 个项目` : '暂无数据';
+}
+
+main();
+</script>
 </body>
 </html>

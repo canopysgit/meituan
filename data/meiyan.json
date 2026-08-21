@@ -1,0 +1,54 @@
+{
+  "project_key": "meiyan",
+  "label": "美团医美-美眼",
+  "threshold": 0.8,
+  "emoji": "👁️",
+  "platforms": {
+    "DeepSeek": {
+      "dates": [
+        "08/17",
+        "08/21"
+      ],
+      "recommend": [
+        3.6,
+        34.0
+      ],
+      "mention": [
+        52.3,
+        67.6
+      ],
+      "hasReco": [
+        0,
+        30
+      ],
+      "hasMention": [
+        102,
+        78
+      ],
+      "noMention": [
+        13,
+        7
+      ]
+    },
+    "豆包": {
+      "dates": [
+        "08/17"
+      ],
+      "recommend": [
+        10.9
+      ],
+      "mention": [
+        57.5
+      ],
+      "hasReco": [
+        0
+      ],
+      "hasMention": [
+        100
+      ],
+      "noMention": [
+        15
+      ]
+    }
+  }
+}

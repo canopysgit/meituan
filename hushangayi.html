@@ -3,28 +3,327 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>沪上阿姨 GEO监测看板</title>
+<title>GEO监测看板</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
 <style>
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  body { font-family: -apple-system,"SF Pro Display","PingFang SC",sans-serif; background: #f8fafc; color: #1e293b; padding: 20px; }
-  h2 { font-size: 20px; font-weight: 700; margin-bottom: 4px; }
-  .subtitle { font-size: 13px; color: #64748b; margin-bottom: 20px; }
-  .placeholder { background: #fff; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); padding: 60px 20px; text-align: center; }
-  .placeholder .icon { font-size: 48px; margin-bottom: 16px; }
-  .placeholder h3 { font-size: 18px; font-weight: 600; margin-bottom: 8px; color: #475569; }
-  .placeholder p { font-size: 14px; color: #94a3b8; max-width: 400px; margin: 0 auto; line-height: 1.6; }
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,"SF Pro Display","PingFang SC","Microsoft YaHei",sans-serif;background:#f5f6fa;color:#1a1a2e;min-height:100vh}
+.header{padding:28px 40px 0}
+.header h1{font-size:21px;font-weight:700;color:#1a1a2e}
+.header .sub{font-size:12px;color:#7a8ba8;margin-top:4px;line-height:1.6}
+.loading{text-align:center;padding:80px 20px;color:#94a3b8;font-size:14px}
+.error{text-align:center;padding:80px 20px;color:#ef4444;font-size:14px}
+.platform-section{padding:20px 40px 0}
+.platform-label{font-size:15px;font-weight:700;color:#1a1a2e;padding-bottom:12px;border-bottom:2px solid #e5e7eb;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.platform-label .dot{width:10px;height:10px;border-radius:50%;display:inline-block}
+.dot.doubao{background:#3b82f6}
+.dot.ds{background:#8b5cf6}
+.dot.qianwen{background:#10b981}
+.dot.yuanbao{background:#f59e0b}
+.kpi-row{display:flex;gap:14px;margin-bottom:16px;flex-wrap:wrap}
+.kpi{flex:1;min-width:130px;background:#fff;border-radius:10px;padding:14px 16px;border:1px solid #e5e7eb;box-shadow:0 1px 3px rgba(0,0,0,.04)}
+.kpi .label{font-size:10px;color:#7a8ba8;text-transform:uppercase;letter-spacing:.3px}
+.kpi .value{font-size:24px;font-weight:700;margin-top:3px}
+.kpi .sub2{font-size:11px;margin-top:3px;color:#64748b}
+.kpi .change{font-size:11px;margin-top:2px}
+.kpi .change.up{color:#10b981}
+.kpi .change.down{color:#ef4444}
+.kpi .change.flat{color:#7a8ba8}
+.kpi .green{color:#10b981}
+.kpi .blue{color:#3b82f6}
+.kpi .orange{color:#f59e0b}
+.kpi .red{color:#ef4444}
+.kpi .purple{color:#8b5cf6}
+.kpi .gray{color:#94a3b8}
+.chart-row{display:flex;gap:14px;margin-bottom:20px;flex-wrap:wrap}
+.chart-box{background:#fff;border-radius:10px;padding:20px;border:1px solid #e5e7eb;box-shadow:0 1px 3px rgba(0,0,0,.04);flex:1;min-width:280px}
+.chart-box h3{font-size:13px;font-weight:600;color:#1a1a2e;margin-bottom:12px}
+.chart-wrap{position:relative;height:260px}
+.chart-box.wide{min-width:100%;flex-basis:100%}
+.note{font-size:11px;color:#999;padding:20px 40px 28px;line-height:1.6}
+@media(max-width:768px){.header{padding:20px 16px 0}.platform-section{padding:16px}.kpi-row{flex-direction:column}.chart-row{flex-direction:column}}
 </style>
 </head>
 <body>
-
-<h2>沪上阿姨 GEO监测看板</h2>
-<p class="subtitle">美团茶饮 GEO 监测 ｜ 豆包 ｜ 初始基线待 08/21</p>
-
-<div class="placeholder">
-  <div class="icon">📊</div>
-  <h3>等待初始数据</h3>
-  <p>沪上阿姨的初始基线数据预计 08/21 产出，届时将自动生成监测看板。</p>
+<div class="header">
+  <h1 id="title">加载中...</h1>
+  <p class="sub" id="subtitle"></p>
 </div>
+<div id="content"><div class="loading">正在加载数据...</div></div>
+<div class="note" id="footer"></div>
 
+<script>
+Chart.register(ChartDataLabels);
+Chart.defaults.color = '#64748b';
+Chart.defaults.borderColor = '#e5e7eb';
+Chart.defaults.font.family = '-apple-system,"SF Pro Display","PingFang SC",sans-serif';
+
+const PLATFORM_COLORS = {
+  '豆包': '#3b82f6',
+  'DeepSeek': '#8b5cf6',
+  '千问': '#10b981',
+  '元宝': '#f59e0b'
+};
+
+const PLATFORM_DOT = {
+  '豆包': 'doubao',
+  'DeepSeek': 'ds',
+  '千问': 'qianwen',
+  '元宝': 'yuanbao'
+};
+
+// 从URL参数或文件名获取项目key
+function getProjectKey() {
+  const params = new URLSearchParams(window.location.search);
+  if (params.has('p')) return params.get('p');
+  // 从文件名推断: qudou.html → qudou
+  const path = window.location.pathname;
+  const filename = path.split('/').pop().replace('.html', '');
+  return filename;
+}
+
+function diff(v0, v1) {
+  const d = (v1 - v0).toFixed(1);
+  if (d > 0) return { text: `较初始 +${d}pp`, cls: 'up' };
+  if (d < 0) return { text: `较初始 ${d}pp`, cls: 'down' };
+  return { text: '持平', cls: 'flat' };
+}
+
+function trendChart(canvasId, platformData, color) {
+  const ctx = document.getElementById(canvasId);
+  if (!ctx) return;
+  new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: platformData.dates,
+      datasets: [
+        {
+          label: '推荐率',
+          data: platformData.recommend,
+          borderColor: color,
+          backgroundColor: color + '20',
+          borderWidth: 2.5,
+          pointRadius: 3,
+          pointBackgroundColor: color,
+          tension: 0.3,
+          fill: false
+        },
+        {
+          label: '提及率',
+          data: platformData.mention,
+          borderColor: color,
+          backgroundColor: color + '10',
+          borderWidth: 2,
+          borderDash: [6, 4],
+          pointRadius: 2,
+          pointBackgroundColor: color,
+          tension: 0.3,
+          fill: false
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend: { position: 'top', labels: { usePointStyle: true, padding: 16 } },
+        tooltip: { callbacks: { label: c => `${c.dataset.label}: ${c.parsed.y}%` } }
+      },
+      scales: {
+        y: { min: 0, max: 100, ticks: { callback: v => v + '%' }, grid: { color: '#f0f0f5' } },
+        x: { grid: { display: false } }
+      }
+    }
+  });
+}
+
+function barChart(canvasId, platformData) {
+  const ctx = document.getElementById(canvasId);
+  if (!ctx) return;
+  new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: platformData.dates,
+      datasets: [
+        {
+          label: '有推荐',
+          data: platformData.hasReco,
+          backgroundColor: '#10b981',
+          borderRadius: { topLeft: 3, topRight: 3 },
+          barPercentage: 0.65,
+          categoryPercentage: 0.6,
+          datalabels: {
+            display: true,
+            color: function(ctx) { return ctx.dataset.data[ctx.dataIndex] <= 3 ? '#10b981' : '#fff'; },
+            font: { size: 11, weight: '700' },
+            anchor: function(ctx) { return ctx.dataset.data[ctx.dataIndex] <= 3 ? 'end' : 'center'; },
+            align: function(ctx) { return ctx.dataset.data[ctx.dataIndex] <= 3 ? 'end' : 'center'; },
+            offset: function(ctx) { return ctx.dataset.data[ctx.dataIndex] <= 3 ? -4 : 0; },
+            formatter: v => v
+          }
+        },
+        {
+          label: '有提及',
+          data: platformData.hasMention,
+          backgroundColor: '#f59e0b',
+          barPercentage: 0.65,
+          categoryPercentage: 0.6,
+          datalabels: {
+            display: function(ctx) { return ctx.dataset.data[ctx.dataIndex] >= 3; },
+            color: '#fff',
+            font: { size: 11, weight: '700' },
+            anchor: 'center',
+            align: 'center',
+            formatter: v => v
+          }
+        },
+        {
+          label: '无提及',
+          data: platformData.noMention,
+          backgroundColor: '#cbd5e1',
+          borderRadius: { bottomLeft: 3, bottomRight: 3 },
+          barPercentage: 0.65,
+          categoryPercentage: 0.6,
+          datalabels: {
+            display: function(ctx) { return ctx.dataset.data[ctx.dataIndex] >= 3; },
+            color: '#475569',
+            font: { size: 11, weight: '700' },
+            anchor: 'center',
+            align: 'center',
+            formatter: v => v
+          }
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend: { position: 'top', labels: { usePointStyle: true, padding: 16 } },
+        tooltip: { callbacks: { label: c => `${c.dataset.label}: ${c.parsed.y}题` } }
+      },
+      scales: {
+        y: { stacked: true, min: 0, ticks: { callback: v => v + '题' }, grid: { color: '#f0f0f5' } },
+        x: { stacked: true, grid: { display: false } }
+      }
+    }
+  });
+}
+
+function renderPlatformSection(platformName, platformData, threshold) {
+  const total = platformData.hasReco[platformData.hasReco.length-1]
+    + platformData.hasMention[platformData.hasMention.length-1]
+    + platformData.noMention[platformData.noMention.length-1];
+  const lastReco = platformData.recommend[platformData.recommend.length-1];
+  const lastMention = platformData.mention[platformData.mention.length-1];
+  const lastHasReco = platformData.hasReco[platformData.hasReco.length-1];
+  const lastHasMention = platformData.hasMention[platformData.hasMention.length-1];
+  const lastNoMention = platformData.noMention[platformData.noMention.length-1];
+  const recoFirst = platformData.recommend[0];
+  const mentFirst = platformData.mention[0];
+  const dReco = diff(recoFirst, lastReco);
+  const dMent = diff(mentFirst, lastMention);
+  const isLast达标 = lastReco >= threshold * 100;
+  const dotClass = PLATFORM_DOT[platformName] || 'doubao';
+
+  return `
+    <div class="platform-section">
+      <div class="platform-label"><span class="dot ${dotClass}"></span> ${platformName}</div>
+      <div class="kpi-row">
+        <div class="kpi">
+          <div class="label">推荐率</div>
+          <div class="value ${isLast达标 ? 'green' : 'orange'}">${lastReco.toFixed(1)}%</div>
+          <div class="change ${dReco.cls}">${dReco.text}</div>
+        </div>
+        <div class="kpi">
+          <div class="label">提及率</div>
+          <div class="value blue">${lastMention.toFixed(1)}%</div>
+          <div class="change ${dMent.cls}">${dMent.text}</div>
+        </div>
+        <div class="kpi">
+          <div class="label">有推荐</div>
+          <div class="value green">${lastHasReco}题</div>
+          <div class="sub2">共${total}题</div>
+        </div>
+        <div class="kpi">
+          <div class="label">有提及 / 无提及</div>
+          <div class="value gray">${lastHasMention} / ${lastNoMention}</div>
+        </div>
+      </div>
+      <div class="chart-row">
+        <div class="chart-box wide">
+          <h3>推荐率 vs 提及率趋势（实线=推荐率 / 虚线=提及率）</h3>
+          <div class="chart-wrap"><canvas id="trend_${dotClass}"></canvas></div>
+        </div>
+      </div>
+      <div class="chart-row">
+        <div class="chart-box wide">
+          <h3>每日达标分布（有推荐 / 有提及 / 无提及）</h3>
+          <div class="chart-wrap"><canvas id="bar_${dotClass}"></canvas></div>
+        </div>
+      </div>
+    </div>`;
+}
+
+async function main() {
+  const key = getProjectKey();
+  const content = document.getElementById('content');
+  const titleEl = document.getElementById('title');
+  const subEl = document.getElementById('subtitle');
+  const footerEl = document.getElementById('footer');
+
+  try {
+    const resp = await fetch(`data/${key}.json`);
+    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+    const data = await resp.json();
+
+    // 标题
+    titleEl.textContent = `${data.emoji || '📊'} ${data.label} · GEO监测看板`;
+    const platforms = Object.keys(data.platforms);
+    const qcount = data.platforms[platforms[0]]
+      ? data.platforms[platforms[0]].hasReco[0] + data.platforms[platforms[0]].hasMention[0] + data.platforms[platforms[0]].noMention[0]
+      : '?';
+    const firstPlatform = platforms.join(' + ');
+    const thresholdPct = (data.threshold * 100).toFixed(0);
+    subEl.textContent = `达标标准：推荐率 ≥ ${thresholdPct}% ｜ ${qcount}题 × ${firstPlatform}`;
+
+    // 渲染每个平台
+    let html = '';
+    platforms.forEach(p => {
+      html += renderPlatformSection(p, data.platforms[p], data.threshold);
+    });
+    content.innerHTML = html;
+
+    // 绘制图表（需要在DOM渲染后）
+    requestAnimationFrame(() => {
+      platforms.forEach(p => {
+        const dotClass = PLATFORM_DOT[p] || 'doubao';
+        const color = PLATFORM_COLORS[p] || '#3b82f6';
+        trendChart(`trend_${dotClass}`, data.platforms[p], color);
+        barChart(`bar_${dotClass}`, data.platforms[p]);
+      });
+    });
+
+    // 页脚
+    const lastDate = data.platforms[platforms[0]]?.dates?.slice(-1)[0] || '?';
+    footerEl.innerHTML = `
+      数据来源：截图数据目录 Excel 报告 ｜ 达标标准：推荐率 ≥ ${thresholdPct}%<br>
+      效果统计分档：有推荐 / 有提及 / 无提及<br>
+      最新数据日期：${lastDate}
+    `;
+
+    // 更新页面标题
+    document.title = `${data.label} GEO监测看板`;
+
+  } catch (e) {
+    content.innerHTML = `<div class="error">加载数据失败: ${e.message}<br><br>请确认 data/${key}.json 存在</div>`;
+  }
+}
+
+main();
+</script>
 </body>
 </html>
