@@ -1,0 +1,15 @@
+{
+  "label": "霸王茶姬",
+  "emoji": "🍵",
+  "threshold": 0.8,
+  "platforms": {
+    "豆包": {
+      "dates": ["初始(08/20)"],
+      "recommend": [91.5],
+      "mention": [91.5],
+      "hasReco": [87],
+      "hasMention": [12],
+      "noMention": [1]
+    }
+  }
+}

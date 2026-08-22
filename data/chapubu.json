@@ -1,0 +1,15 @@
+{
+  "label": "茶瀑布",
+  "emoji": "🍵",
+  "threshold": 0.8,
+  "platforms": {
+    "豆包": {
+      "dates": ["初始(08/20)"],
+      "recommend": [52.2],
+      "mention": [52.2],
+      "hasReco": [38],
+      "hasMention": [36],
+      "noMention": [26]
+    }
+  }
+}

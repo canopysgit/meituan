@@ -1,0 +1,15 @@
+{
+  "label": "沪上阿姨",
+  "emoji": "🍵",
+  "threshold": 0.8,
+  "platforms": {
+    "豆包": {
+      "dates": ["初始(08/21)"],
+      "recommend": [62.5],
+      "mention": [62.5],
+      "hasReco": [51],
+      "hasMention": [51],
+      "noMention": [14]
+    }
+  }
+}
