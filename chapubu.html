@@ -107,7 +107,8 @@ function trendChart(canvasId, platformData, color) {
           pointRadius: 3,
           pointBackgroundColor: color,
           tension: 0.3,
-          fill: false
+          fill: false,
+          datalabels: { display: false }
         },
         {
           label: '提及率',
@@ -119,7 +120,8 @@ function trendChart(canvasId, platformData, color) {
           pointRadius: 2,
           pointBackgroundColor: color,
           tension: 0.3,
-          fill: false
+          fill: false,
+          datalabels: { display: false }
         }
       ]
     },
@@ -128,7 +130,7 @@ function trendChart(canvasId, platformData, color) {
       maintainAspectRatio: false,
       interaction: { mode: 'index', intersect: false },
       plugins: {
-        legend: { position: 'top', labels: { usePointStyle: true, padding: 16 } },
+        legend: { position: 'top', labels: { usePointStyle: true, pointStyleWidth: 20, padding: 20, font: { size: 12 } } },
         tooltip: { callbacks: { label: c => `${c.dataset.label}: ${c.parsed.y}%` } }
       },
       scales: {

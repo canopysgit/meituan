@@ -197,7 +197,7 @@ function trendChart(canvasId, data, color) {
       maintainAspectRatio: false,
       interaction: { mode: 'index', intersect: false },
       plugins: {
-        legend: { position: 'top', labels: { usePointStyle: true, padding: 16 } },
+        legend: { position: 'top', labels: { usePointStyle: true, pointStyleWidth: 20, padding: 20, font: { size: 12 } } },
         tooltip: { callbacks: { label: c => `${c.dataset.label}: ${c.parsed.y}%` } }
       },
       scales: {
