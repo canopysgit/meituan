@@ -173,8 +173,7 @@ function trendChart(canvasId, data, color) {
           pointBorderColor: color,
           pointBorderWidth: 2,
           tension: 0.3,
-          fill: true,
-          datalabels: { display: false }
+          fill: true
         },
         {
           label: '提及率',
@@ -187,8 +186,7 @@ function trendChart(canvasId, data, color) {
           pointBorderColor: '#fff',
           pointBorderWidth: 1,
           tension: 0.3,
-          fill: false,
-          datalabels: { display: false }
+          fill: false
         }
       ]
     },
@@ -197,8 +195,29 @@ function trendChart(canvasId, data, color) {
       maintainAspectRatio: false,
       interaction: { mode: 'index', intersect: false },
       plugins: {
-        legend: { position: 'top', labels: { usePointStyle: true, pointStyleWidth: 20, padding: 20, font: { size: 12 } } },
-        tooltip: { callbacks: { label: c => `${c.dataset.label}: ${c.parsed.y}%` } }
+        legend: {
+          position: 'top',
+          labels: {
+            usePointStyle: true,
+            pointStyleWidth: 20,
+            padding: 20,
+            font: { size: 12 },
+            generateLabels: function(chart) {
+              return [
+                { text: '推荐率', fillStyle: 'transparent', strokeStyle: color, lineWidth: 2, pointStyle: 'circle', lineDash: [], datasetIndex: 0 },
+                { text: '提及率', fillStyle: 'transparent', strokeStyle: color, lineWidth: 2, pointStyle: 'circle', lineDash: [6, 4], datasetIndex: 1 }
+              ];
+            }
+          }
+        },
+        tooltip: { callbacks: { label: c => `${c.dataset.label}: ${c.parsed.y}%` } },
+        datalabels: {
+          align: function(ctx) { return ctx.datasetIndex === 0 ? 'top' : 'bottom'; },
+          offset: 4,
+          font: { size: 10 },
+          color: '#666',
+          formatter: function(value) { return value + '%'; }
+        }
       },
       scales: {
         y: { min: 0, max: 70, ticks: { callback: v => v + '%' }, grid: { color: '#f0f0f5' } },
