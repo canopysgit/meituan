@@ -4,12 +4,12 @@
   "threshold": 0.8,
   "platforms": {
     "豆包": {
-      "dates": ["初始(08/21)", "08/23"],
-      "recommend": [62.5, 61.9],
-      "mention": [62.5, 61.9],
-      "hasReco": [51, 45],
-      "hasMention": [51, 89],
-      "noMention": [14, 11]
+      "dates": ["08/21", "08/22", "08/23"],
+      "recommend": [62.5, 63.5, 61.9],
+      "mention": [62.5, 63.5, 61.9],
+      "hasReco": [86, 90, 45],
+      "hasMention": [0, 0, 89],
+      "noMention": [14, 10, 11]
     }
   }
 }
