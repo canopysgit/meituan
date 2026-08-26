@@ -1,0 +1,28 @@
+{
+  "project_key": "家服六十七词监测",
+  "label": "家服-六十七词监测",
+  "threshold": 0.8,
+  "emoji": "📊",
+  "platforms": {
+    "DeepSeek": {
+      "dates": [
+        "08/26"
+      ],
+      "recommend": [
+        13.0
+      ],
+      "mention": [
+        13.0
+      ],
+      "hasReco": [
+        2
+      ],
+      "hasMention": [
+        40
+      ],
+      "noMention": [
+        25
+      ]
+    }
+  }
+}
