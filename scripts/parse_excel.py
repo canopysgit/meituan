@@ -37,8 +37,11 @@ PROJECT_MAP = {
     "美团-企业版":     {"label": "美团企业版",       "key": "qiyeban",   "qcount": 5,   "threshold": 0.80, "emoji": "🏢"},
     # 茶饮项目 — 产线名可能是"霸王茶姬"/"茶瀑布"/"沪上阿姨"等
     "霸王茶姬":        {"label": "霸王茶姬",         "key": "bawangchaji", "qcount": 100, "threshold": 0.80, "emoji": "🍵"},
+    "美团-霸王茶姬":   {"label": "霸王茶姬",         "key": "bawangchaji", "qcount": 100, "threshold": 0.80, "emoji": "🍵"},
     "茶瀑布":          {"label": "茶瀑布",           "key": "chapubu",     "qcount": 100, "threshold": 0.80, "emoji": "🍵"},
+    "美团-茶瀑布":     {"label": "茶瀑布",           "key": "chapubu",     "qcount": 100, "threshold": 0.80, "emoji": "🍵"},
     "沪上阿姨":        {"label": "沪上阿姨",         "key": "hushangayi",  "qcount": 100, "threshold": 0.80, "emoji": "🍵"},
+    "美团-沪上阿姨":   {"label": "沪上阿姨",         "key": "hushangayi",  "qcount": 100, "threshold": 0.80, "emoji": "🍵"},
 }
 
 # 平台名标准化
