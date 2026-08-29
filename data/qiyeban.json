@@ -1,16 +1,34 @@
 {
   "project_key": "qiyeban",
-  "label": "美团企业版",
+  "label": "美团医美-企业版",
   "threshold": 0.8,
   "emoji": "🏢",
   "platforms": {
     "豆包": {
-      "dates": ["初始", "08/26"],
-      "recommend": [60, 62.0],
-      "mention": [60, 62.0],
-      "hasReco": [2, 3],
-      "hasMention": [3, 2],
-      "noMention": [0, 0]
+      "dates": [
+        "初始",
+        "08/26"
+      ],
+      "recommend": [
+        60,
+        62.0
+      ],
+      "mention": [
+        60,
+        62.0
+      ],
+      "hasReco": [
+        2,
+        3
+      ],
+      "hasMention": [
+        3,
+        2
+      ],
+      "noMention": [
+        0,
+        0
+      ]
     }
   }
 }
